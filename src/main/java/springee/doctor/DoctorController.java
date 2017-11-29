@@ -7,24 +7,38 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.Doc;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @RestController
 public class DoctorController {
 
     private Map<Integer, Doctor> doctorMap = new HashMap<Integer, Doctor>() {{
-        put(0, new Doctor(0, "Robert Martin", "Psychologist"));
-        put(1, new Doctor(1, "Josh Long", "Surgeon"));
-        put(2, new Doctor(2, "Joshua Bloch", "Ophthalmologist"));
+        put(0, new Doctor(0, "Robert Martin", "psychologist"));
+        put(1, new Doctor(1, "Josh Long", "surgeon"));
+        put(2, new Doctor(2, "Joshua Bloch", "ophthalmologist"));
     }};
 
     @GetMapping(value = "/doctors")
-    public List<Doctor> getDoctors (@RequestParam Optional<String> specialization) {
+    public List<Doctor> getDoctors (@RequestParam Optional<String> specialization,
+                                    @RequestParam Optional<String> name) {
 
-        return null; //TODO
+        Predicate<Doctor> specFilter = specialization.map(this::filterBySpec)
+            .orElse(doctor -> true);
+
+        Predicate<Doctor> nameFilter = name.map(this::filterByFirstLetterOfName)
+            .orElse(pet -> true);
+
+        Predicate<Doctor> complexFilter = nameFilter.and(specFilter);
+
+        return doctorMap.values().stream()
+            .filter(complexFilter)
+            .collect(Collectors.toList());
     }
 
     @GetMapping(value = "/doctors/{id}")
@@ -46,10 +60,13 @@ public class DoctorController {
     @PutMapping("/doctors/{id}")
     public ResponseEntity<Void> updateDoctor(@PathVariable Integer id,
                                              @RequestBody Doctor doctor) {
-
+        if (!doctorMap.containsKey(id)) {
+            return ResponseEntity.notFound().build();
+        } else if (doctor.getId() != id) {
+            return ResponseEntity.badRequest().build();
+        }
         doctorMap.put(id, doctor);
-
-        return null;
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/doctors/{id}")
@@ -63,6 +80,15 @@ public class DoctorController {
 
         return ResponseEntity.notFound().build();
     }
+
+    private Predicate<Doctor> filterBySpec(String specialization) {
+        return doctor -> doctor.getSpecialization().equals(specialization);
+    }
+
+    private Predicate<Doctor> filterByFirstLetterOfName(String name) {
+        return doctor -> doctor.getName().startsWith(name);
+    }
+
 }
 
 @AllArgsConstructor
