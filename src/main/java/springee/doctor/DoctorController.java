@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.print.Doc;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,16 @@ public class DoctorController {
     @PostMapping("/doctors")
     public ResponseEntity<Void> createDoctor(@RequestBody Doctor doctor) {
 
-        return null;
+        if (doctor.getId() == null) {
+            synchronized (DoctorController.class) {
+                Integer index = doctorMap.size();
+                doctor.setId(index);
+                doctorMap.put(index, doctor);
+                return ResponseEntity.created(URI.create("doctors/" + index)).build();
+            }
+        }
+
+        return ResponseEntity.badRequest().build();
     }
 
     @PutMapping("/doctors/{id}")
