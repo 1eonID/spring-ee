@@ -20,8 +20,6 @@ public class PetController {
     put(1, new Pet("Jerry", "Mouse", 1));
   }};
 
-  Integer counter = 2;
-
   @GetMapping(value = "/greeting")
   public String helloWorld() {
     return "Hello World!";
@@ -56,8 +54,11 @@ public class PetController {
 
     @PostMapping("/pets")
     public ResponseEntity<Void> createPet(@RequestBody Pet pet) {
-      pets.put(++counter, pet);
-      return ResponseEntity.created(URI.create("pets/" + counter)).build();
+      synchronized (PetController.class) {
+        Integer index = pets.size();
+        pets.put(index, pet);
+        return ResponseEntity.created(URI.create("doctors/" + index)).build();
+      }
     }
 
     @PutMapping("/pets/{id}")
@@ -67,12 +68,13 @@ public class PetController {
     }
 
     @DeleteMapping("/pets/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletePet(@PathVariable Integer id) {
-//      if(!pets.containsKey(id)) {
-//        ResponseEntity.badRequest();
-//      }
-      pets.remove(id);
+    public ResponseEntity<Void> deletePet(@PathVariable Integer id) {
+      if (pets.containsKey(id)) {
+        pets.remove(id);
+        return ResponseEntity.noContent().build();
+      }
+
+      return ResponseEntity.notFound().build();
     }
 
   private Predicate<Pet> filterBySpecie(String specie) {

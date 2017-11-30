@@ -80,7 +80,6 @@ public class DoctorController {
     }
 
     @DeleteMapping("/doctors/{id}")
-    //@ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deleteDoctor(@PathVariable Integer id) {
 
         if (doctorMap.containsKey(id)) {
