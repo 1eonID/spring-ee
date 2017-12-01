@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,9 @@ public class DoctorController {
         put(1, new Doctor(1, "Josh Long", "surgeon"));
         put(2, new Doctor(2, "Joshua Bloch", "ophthalmologist"));
     }};
+
+    private volatile AtomicInteger idCounter = new AtomicInteger(3);
+
 
     @GetMapping(value = "/doctors")
     public List<Doctor> getDoctors (@RequestParam Optional<String> specialization,
@@ -56,12 +60,9 @@ public class DoctorController {
     public ResponseEntity<Void> createDoctor(@RequestBody Doctor doctor) {
 
         if (doctor.getId() == null) {
-            synchronized (DoctorController.class) {
-                Integer index = doctorMap.size();
-                doctor.setId(index);
-                doctorMap.put(index, doctor);
-                return ResponseEntity.created(URI.create("doctors/" + index)).build();
-            }
+            doctor.setId(idCounter.get());
+            doctorMap.put(idCounter.get(), doctor);
+            return ResponseEntity.created(URI.create("doctors/" + idCounter.getAndIncrement())).build();
         }
 
         return ResponseEntity.badRequest().build();

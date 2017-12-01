@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,8 @@ public class PetController {
     put(0, new Pet("Tom", "Cat", 3));
     put(1, new Pet("Jerry", "Mouse", 1));
   }};
+
+  private volatile AtomicInteger idCounter = new AtomicInteger(2);
 
   @GetMapping(value = "/greeting")
   public String helloWorld() {
@@ -54,11 +57,8 @@ public class PetController {
 
     @PostMapping("/pets")
     public ResponseEntity<Void> createPet(@RequestBody Pet pet) {
-      synchronized (PetController.class) {
-        Integer index = pets.size();
-        pets.put(index, pet);
-        return ResponseEntity.created(URI.create("doctors/" + index)).build();
-      }
+        pets.put(idCounter.get(), pet);
+        return ResponseEntity.created(URI.create("doctors/" + idCounter.getAndIncrement())).build();
     }
 
     @PutMapping("/pets/{id}")
