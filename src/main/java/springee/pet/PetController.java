@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springee.doctor.DoctorController;
 
+import javax.print.Doc;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,6 +22,8 @@ public class PetController {
     put(0, new Pet("Tom", "Cat", 3));
     put(1, new Pet("Jerry", "Mouse", 1));
   }};
+
+  private Map<Integer, Pet> synPets = Collections.synchronizedMap(pets);
 
   private volatile AtomicInteger idCounter = new AtomicInteger(2);
 
@@ -40,37 +44,37 @@ public class PetController {
 
     Predicate<Pet> complexFilter = ageFilter.and(specieFilter);
 
-    return pets.values().stream()
+    return synPets.values().stream()
             .filter(complexFilter)
             .collect(Collectors.toList());
     }
 
     @GetMapping("/pets/{id}")
     public ResponseEntity<?> getPetById(@PathVariable Integer id) {
-      if(id >= pets.size()) {
+      if(id >= synPets.size()) {
         return ResponseEntity.badRequest()
                 .body(new ErrorBody("There is no pet with ID = " + id));
       }
 
-      return  ResponseEntity.ok(pets.get(id));
+      return  ResponseEntity.ok(synPets.get(id));
     }
 
     @PostMapping("/pets")
     public ResponseEntity<Void> createPet(@RequestBody Pet pet) {
-        pets.put(idCounter.get(), pet);
+      synPets.put(idCounter.get(), pet);
         return ResponseEntity.created(URI.create("doctors/" + idCounter.getAndIncrement())).build();
     }
 
     @PutMapping("/pets/{id}")
     public void updatePet(@PathVariable Integer id,
                           @RequestBody Pet pet) {
-      pets.put(id, pet);
+      synPets.put(id, pet);
     }
 
     @DeleteMapping("/pets/{id}")
     public ResponseEntity<Void> deletePet(@PathVariable Integer id) {
-      if (pets.containsKey(id)) {
-        pets.remove(id);
+      if (synPets.containsKey(id)) {
+        synPets.remove(id);
         return ResponseEntity.noContent().build();
       }
 

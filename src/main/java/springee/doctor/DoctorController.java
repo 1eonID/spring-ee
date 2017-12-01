@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.print.Doc;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -20,18 +17,22 @@ import java.util.stream.Collectors;
 @RestController
 public class DoctorController {
 
+
+
     private Map<Integer, Doctor> doctorMap = new HashMap<Integer, Doctor>() {{
         put(0, new Doctor(0, "Robert Martin", "psychologist"));
         put(1, new Doctor(1, "Josh Long", "surgeon"));
         put(2, new Doctor(2, "Joshua Bloch", "ophthalmologist"));
     }};
 
+    private Map<Integer, Doctor> synDoctorMap = Collections.synchronizedMap(doctorMap);
+
     private volatile AtomicInteger idCounter = new AtomicInteger(3);
 
 
     @GetMapping(value = "/doctors")
     public List<Doctor> getDoctors (@RequestParam Optional<String> specialization,
-                                    @RequestParam Optional<String> name) {
+                                                @RequestParam Optional<String> name) {
 
         Predicate<Doctor> specFilter = specialization.map(this::filterBySpec)
             .orElse(doctor -> true);
@@ -41,7 +42,7 @@ public class DoctorController {
 
         Predicate<Doctor> complexFilter = nameFilter.and(specFilter);
 
-        return doctorMap.values().stream()
+        return synDoctorMap.values().stream()
             .filter(complexFilter)
             .collect(Collectors.toList());
     }
@@ -49,8 +50,8 @@ public class DoctorController {
     @GetMapping(value = "/doctors/{id}")
     public ResponseEntity<?> getDoctorById(@PathVariable Integer id) {
 
-        if (doctorMap.containsKey(id)) {
-            return ResponseEntity.ok(doctorMap.get(id));
+        if (synDoctorMap.containsKey(id)) {
+            return ResponseEntity.ok(synDoctorMap.get(id));
         }
 
         return ResponseEntity.notFound().build();
@@ -61,7 +62,7 @@ public class DoctorController {
 
         if (doctor.getId() == null) {
             doctor.setId(idCounter.get());
-            doctorMap.put(idCounter.get(), doctor);
+            synDoctorMap.put(idCounter.get(), doctor);
             return ResponseEntity.created(URI.create("doctors/" + idCounter.getAndIncrement())).build();
         }
 
@@ -71,20 +72,20 @@ public class DoctorController {
     @PutMapping("/doctors/{id}")
     public ResponseEntity<Void> updateDoctor(@PathVariable Integer id,
                                              @RequestBody Doctor doctor) {
-        if (!doctorMap.containsKey(id)) {
+        if (!synDoctorMap.containsKey(id)) {
             return ResponseEntity.notFound().build();
         } else if (doctor.getId() != id) {
             return ResponseEntity.badRequest().build();
         }
-        doctorMap.put(id, doctor);
+        synDoctorMap.put(id, doctor);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/doctors/{id}")
     public ResponseEntity<Void> deleteDoctor(@PathVariable Integer id) {
 
-        if (doctorMap.containsKey(id)) {
-            doctorMap.remove(id);
+        if (synDoctorMap.containsKey(id)) {
+            synDoctorMap.remove(id);
             return ResponseEntity.noContent().build();
         }
 
