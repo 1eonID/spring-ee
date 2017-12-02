@@ -1,4 +1,4 @@
-package springee.pet;
+package springee.greeting;
 
 import org.springframework.stereotype.Component;
 import java.util.Random;

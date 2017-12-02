@@ -2,6 +2,7 @@ package springee.pet;
 
 import org.junit.Assert;
 import org.junit.Test;
+import springee.greeting.RandomGreet;
 
 import java.util.function.Function;
 import java.util.stream.Collectors;

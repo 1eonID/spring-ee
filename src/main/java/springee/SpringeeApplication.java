@@ -9,4 +9,6 @@ public class SpringeeApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SpringeeApplication.class, args);
 	}
+
+
 }
