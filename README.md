@@ -12,3 +12,6 @@ Site `start.spring.io`
 
 ## JSON transformer
 Jackson
+
+## Change parameters from CLI (in Mac)
+`export CLINIC_INFO_NAME="name from enviroment"`
