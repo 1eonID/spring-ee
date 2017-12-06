@@ -21,6 +21,12 @@ public class DoctorController {
         return doctorService.getDoctors(specialization, name);
     }
 
+    @GetMapping(value = "/doctors/specializations")
+    public List<String> getSpecieList () {
+
+        return doctorService.getSpecieList();
+    }
+
     @GetMapping(value = "/doctors/{id}")
     public ResponseEntity<?> getDoctorById(@PathVariable UUID id) {
 
@@ -32,8 +38,9 @@ public class DoctorController {
 
     @PostMapping("/doctors")
     public ResponseEntity<Void> createDoctor(@RequestBody Doctor doctor) {
+        List<String> specieList = doctorService.getSpecieList();
 
-        if (doctor.getId() == null) {
+        if (doctor.getId() == null && specieList.contains(doctor.getSpecialization())) {
             Doctor created = doctorService.create(doctor);
             return ResponseEntity.created(URI.create("doctors/" + created.getId())).build();
         }
@@ -45,18 +52,7 @@ public class DoctorController {
     public ResponseEntity<Void> updateDoctor(@PathVariable UUID id,
                                              @RequestBody Doctor doctor) {
 
-        Optional<Doctor> isUpdated = doctorService.update(id, doctor);
-
-        return isUpdated.map(ResponseEntity::noContent)
-                .orElse(ResponseEntity.notFound().build());
-
-//        if (!doctorMap.containsKey(id)) {
-//            return ResponseEntity.notFound().build();
-//        } else if (!doctor.getId().equals(id)) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//        doctorMap.put(id, doctor);
-//        return ResponseEntity.noContent().build();
+        return doctorService.update(id, doctor);
     }
 
     @DeleteMapping("/doctors/{id}")

@@ -1,9 +1,9 @@
 package springee.doctor;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
-import javax.print.Doc;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@Service
 public class DoctorService {
 
     private final DoctorRepository doctorRepository;
@@ -37,6 +38,10 @@ public class DoctorService {
         return doctor -> doctor.getName().startsWith(name);
     }
 
+    public List<String> getSpecieList() {
+        return doctorRepository.getSpecieList();
+    }
+
     public Optional<Doctor> getById(UUID id) {
         return doctorRepository.findById(id);
     }
@@ -45,7 +50,7 @@ public class DoctorService {
         return doctorRepository.create(doctor);
     }
 
-    public Optional<Doctor> update(UUID id, Doctor doctor) {
+    public ResponseEntity<Void> update(UUID id, Doctor doctor) {
         return doctorRepository.update(id, doctor);
     }
 
