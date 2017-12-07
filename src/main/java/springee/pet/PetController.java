@@ -3,14 +3,12 @@ package springee.pet;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springee.doctor.DoctorController;
 
-import javax.print.Doc;
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -18,12 +16,10 @@ import java.util.stream.Collectors;
 @RestController
 public class PetController {
 
-  private Map<Integer, Pet> pets = new HashMap<Integer, Pet>() {{
+  private Map<Integer, Pet> synPets = new ConcurrentHashMap<Integer, Pet>() {{
     put(0, new Pet("Tom", "Cat", 3));
     put(1, new Pet("Jerry", "Mouse", 1));
   }};
-
-  private Map<Integer, Pet> synPets = Collections.synchronizedMap(pets);
 
   private volatile AtomicInteger idCounter = new AtomicInteger(2);
 

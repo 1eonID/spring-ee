@@ -1,17 +1,19 @@
 package springee.doctor;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.Assert;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@RequiredArgsConstructor
 @Repository
 public class DoctorRepository {
 
-    @Autowired
-    private DoctorConfig  doctorConfig = new DoctorConfig();
+    private final DoctorConfig doctorConfig;
 
     private final UUID uuid1 = UUID.randomUUID();
     private final UUID uuid2 = UUID.randomUUID();
