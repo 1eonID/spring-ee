@@ -1,16 +1,17 @@
 package springee.doctor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class DoctorRepository {
+
+    @Autowired
+    private DoctorConfig  doctorConfig = new DoctorConfig();
 
     private final UUID uuid1 = UUID.randomUUID();
     private final UUID uuid2 = UUID.randomUUID();
@@ -22,31 +23,9 @@ public class DoctorRepository {
         put(uuid3, new Doctor(uuid3, "Joshua Bloch", "ophthalmologist"));
     }};
 
-    //////////
-    private static Properties prop = new Properties();
-
-    /**read properties from file to Properties object.*/
-    public DoctorRepository() {
-        try (FileInputStream fStream = new FileInputStream("/src/main/resources/application.yml");
-             InputStreamReader in = new InputStreamReader(fStream)) {
-            try {
-                prop.load(in);
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public List<String> getSpecieList() {
-        List<String> result = new ArrayList<>();
-        String[] specializations = (prop.getProperty("specializations")).split("\n");
-        Collections.addAll(result, specializations);
-        return result;
+        return doctorConfig.getSpecializations();
     }
-    //////////
 
     public Collection<Doctor> findAll() {
         return doctorMap.values();
