@@ -1,3 +1,17 @@
 clinic:
   name: 'my clinic'
   workingHours: '8-17'
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/pet_clinic
+    username: leonid
+    password: 123
+
+  jackson.property-naming-strategy: SNAKE_CASE
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQOLDialect
+    hibernate.ddl-auto: update  #DROP and CREATE database in production 'validate'
+
+logging.level.org.hibernate: DEBUG

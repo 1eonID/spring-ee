@@ -10,9 +10,22 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PetService {
 
-    private final PetRepository petRepository;
+    private final JpaPetRepository petRepository;
 
-    public List<Pet> getPets(Optional<String> specie, Optional<Integer> age) {
+    public List<Pet> getPetsUsingSeparateJpaMethods(Optional<String> specie, Optional<Integer> age) {
+        if (specie.isPresent() && age.isPresent()) {
+            petRepository.findBySpecieAndAge(specie.get(), age.get());
+        }
+        if (specie.isPresent()) {
+            return petRepository.findBySpecie(specie.get());
+        }
+        if (age.isPresent()) {
+            return petRepository.findByAge(age.get());
+        }
+        return petRepository.findAll();
+    }
+
+    public List<Pet> getPetsUsingStreamFilters(Optional<String> specie, Optional<Integer> age) {
         Predicate<Pet> specieFilter = specie.map(this::filterBySpecie)
                 .orElse(pet -> true);
 
@@ -24,6 +37,10 @@ public class PetService {
         return petRepository.findAll().stream()
                 .filter(complexFilter)
                 .collect(Collectors.toList());
+    }
+
+    public List<Pet> getPetsUsingSingleJpaMethods(Optional<String> specie, Optional<Integer> age) {
+        return petRepository.findNullebleBySpecieAndAge(specie.orElse(null), age.orElse(null));
     }
 
     private Predicate<Pet> filterBySpecie(String specie) {
@@ -40,10 +57,11 @@ public class PetService {
 
     public Pet save(Pet pet) {
         return petRepository.save(pet);
-
     }
 
     public Optional<Pet> delete(Integer id) {
-        return petRepository.delete(id);
+        Optional<Pet> mayBePet = petRepository.findById(id);
+        mayBePet.ifPresent(pet -> petRepository.delete(pet.getId()));
+        return mayBePet;
     }
 }

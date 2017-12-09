@@ -15,3 +15,9 @@ Jackson
 
 ## Change parameters from CLI (in Mac)
 `export CLINIC_INFO_NAME="name from enviroment"`
+
+## Configuration Spring:
+`Appendix A. Common application properties`
+
+###Spring data query methods creation:
+https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.query-creation
