@@ -3,3 +3,17 @@ doctor:
     - psychologist
     - surgeon
     - ophthalmologist
+
+spring:
+  datasource:
+    url: jdbc:postgresql:postgres
+    username: postgres
+    password: postgres
+
+  jackson.property-naming-strategy: SNAKE_CASE
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate.ddl-auto: update  #DROP and CREATE database in production 'validate'
+
+logging.level.org.hibernate: DEBUG

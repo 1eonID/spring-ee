@@ -15,20 +15,20 @@ public class DoctorController {
     private final DoctorService doctorService;
 
     @GetMapping(value = "/doctors")
-    public List<Doctor> getDoctors (@RequestParam Optional<String> specialization,
-                                    @RequestParam Optional<String> name) {
+    public List<Doctor> getDoctors (@RequestParam Optional<String> name,
+                                    @RequestParam Optional<String> specialization) {
 
-        return doctorService.getDoctors(specialization, name);
+        return doctorService.getDoctorsUsingSingleJpaMethods(name, specialization);
     }
 
     @GetMapping(value = "/doctors/specializations")
     public List<String> getSpecieList () {
 
-        return doctorService.getSpecieList();
+        return doctorService.getSpecializations();
     }
 
     @GetMapping(value = "/doctors/{id}")
-    public ResponseEntity<?> getDoctorById(@PathVariable UUID id) {
+    public ResponseEntity<?> getDoctorById(@PathVariable Integer id) {
 
         Optional<Doctor> findDoctor = doctorService.getById(id);
 
@@ -38,10 +38,10 @@ public class DoctorController {
 
     @PostMapping("/doctors")
     public ResponseEntity<Void> createDoctor(@RequestBody Doctor doctor) {
-        List<String> specieList = doctorService.getSpecieList();
+        List<String> specieList = doctorService.getSpecializations();
 
         if (doctor.getId() == null && specieList.contains(doctor.getSpecialization())) {
-            Doctor created = doctorService.create(doctor);
+            Doctor created = doctorService.save(doctor);
             return ResponseEntity.created(URI.create("doctors/" + created.getId())).build();
         }
 
@@ -49,14 +49,22 @@ public class DoctorController {
     }
 
     @PutMapping("/doctors/{id}")
-    public ResponseEntity<Void> updateDoctor(@PathVariable UUID id,
+    public ResponseEntity<Void> updateDoctor(@PathVariable Integer id,
                                              @RequestBody Doctor doctor) {
 
-        return doctorService.update(id, doctor);
+        List<String> specieList = doctorService.getSpecializations();
+
+        if (!doctorService.exists(id)) {
+            return ResponseEntity.notFound().build();
+        } else if (!specieList.contains(doctor.getSpecialization())) {
+            return ResponseEntity.badRequest().build();
+        }
+        doctorService.update(id, doctor);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/doctors/{id}")
-    public ResponseEntity<?> deleteDoctor(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteDoctor(@PathVariable Integer id) {
 
         Optional<Doctor> isDeleted = doctorService.delete(id);
 
