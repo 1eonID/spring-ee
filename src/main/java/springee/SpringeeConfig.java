@@ -25,6 +25,10 @@ public class SpringeeConfig {
       repository.save(new Doctor("Josh Long", "surgeon"));
       repository.save(new Doctor("Joshua Bloch", "ophthalmologist"));
 
+//      repository.createSpecializationsList();
+//      repository.insertInSpecializationsList("psychologist");
+//      repository.insertInSpecializationsList("surgeon");
+//      repository.insertInSpecializationsList("ophthalmologist");
     };
   }
 }

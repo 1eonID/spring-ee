@@ -11,14 +11,21 @@ public interface JpaDoctorRepository extends JpaRepository<Doctor, Integer> {
 
   Optional<Doctor> findById(Integer id);
 
-  //List<String> getSpecializations();
+//  @Query("CREATE TABLE specializations " +
+//          "(name VARCHAR (50)) ")
+//  void createSpecializationsList();
+//  @Query("INSERT INTO specializations (name) VALUES (:specialization OR :specialization IS NULL) ")
+//  void insertInSpecializationsList(@Param("specialization") String specialization);
+//
+//  @Query("SELECT * FROM specializations ")
+//  List<String> getSpecializations();
 
   List<Doctor> findBySpecialization (String specialization);
 
   List<Doctor> findByName(String name);
 
   @Query("SELECT doctor FROM Doctor AS doctor " +
-         "WHERE (doctor.name = :name OR :name IS NULL) " +
+         "WHERE ((LOWER(doctor.name) = LOWER(:name)) OR :name IS NULL) " +
          " AND (doctor.specialization = :specialization OR :specialization IS NULL) ")
   List<Doctor> findNullebleByNameAndSpecialization(@Param("name") String name,
                                            @Param("specialization")String specialization);
