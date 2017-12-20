@@ -19,6 +19,6 @@ public interface JpaPetRepository extends JpaRepository<Pet, Integer> {
     @Query("SELECT pet FROM Pet AS pet " +
             "WHERE (pet.specie = :specie OR :specie IS NULL) " +
             " AND (pet.age = :age OR :age IS NULL ) ")
-    List<Pet> findNullebleBySpecieAndAge(@Param("specie")String specie,
+    List<Pet> findNullableBySpecieAndAge(@Param("specie")String specie,
                                          @Param("age") Integer age);
 }

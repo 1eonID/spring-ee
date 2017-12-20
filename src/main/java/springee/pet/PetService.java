@@ -2,6 +2,7 @@ package springee.pet;
 
 import lombok.RequiredArgsConstructor;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -39,8 +40,14 @@ public class PetService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<Pet> getPetsUsingSingleJpaMethods(Optional<String> specie, Optional<Integer> age) {
-        return petRepository.findNullebleBySpecieAndAge(specie.orElse(null), age.orElse(null));
+        List<Pet> nullableBySpecieAndAge = petRepository.findNullableBySpecieAndAge(specie.orElse(null),
+            age.orElse(null));
+
+        nullableBySpecieAndAge.forEach(pet -> System.out.println(pet.getPrescriptions()));
+
+        return nullableBySpecieAndAge;
     }
 
     private Predicate<Pet> filterBySpecie(String specie) {

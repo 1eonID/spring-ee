@@ -13,7 +13,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 
-group = 'hillelee'
+group = 'springee'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
@@ -24,7 +24,9 @@ repositories {
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
-	
+	compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+	compile 'org.hibernate:hibernate-java8'
+
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 
 	//runtime('com.h2database:h2')

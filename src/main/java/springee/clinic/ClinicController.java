@@ -22,7 +22,7 @@ public class ClinicController {
 
 @Data
 @Component
-@ConfigurationProperties("clinic")
+@ConfigurationProperties("clinic-info")
 class ClinicInfo {
     private String name;
     private String workingHours;
