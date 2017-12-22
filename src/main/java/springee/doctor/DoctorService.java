@@ -16,30 +16,8 @@ public class DoctorService {
 
     private final JpaDoctorRepository doctorRepository;
 
-    public List<Doctor> getDoctorsUsingStreamFilters(Optional<String> specialization, Optional<String> name) {
-        Predicate<Doctor> specFilter = specialization.map(this::filterBySpec)
-                .orElse(doctor -> true);
-
-        Predicate<Doctor> nameFilter = name.map(this::filterByFirstLetterOfName)
-                .orElse(doctor -> true);
-
-        Predicate<Doctor> complexFilter = nameFilter.and(specFilter);
-
-        return doctorRepository.findAll().stream()
-                .filter(complexFilter)
-                .collect(Collectors.toList());
-    }
-
-    public List<Doctor> getDoctorsUsingSingleJpaMethods(Optional<String> name, Optional<String> specialization) {
-        return doctorRepository.findNullebleByNameAndSpecialization(name.orElse(null), specialization.orElse(null));
-    }
-
-    private Predicate<Doctor> filterBySpec(String specialization) {
-        return doctor -> doctor.getSpecialization().equals(specialization);
-    }
-
-    private Predicate<Doctor> filterByFirstLetterOfName(String name) {
-        return doctor -> doctor.getName().startsWith(name);
+    public List<Doctor> getDoctorsUsingSingleJpaMethods(Optional<String> name, Optional<List<String>> specialization) {
+        return doctorRepository.findNullableByNameAndSpecialization(name.orElse(null), specialization.orElse(null));
     }
 
     public List<String> getSpecializations() {

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -13,10 +14,11 @@ import java.util.*;
 public class DoctorController {
 
     private final DoctorService doctorService;
+    private Schedule schedule;
 
     @GetMapping(value = "/doctors")
     public List<Doctor> getDoctors (@RequestParam Optional<String> name,
-                                    @RequestParam Optional<String> specialization) {
+                                    @RequestParam Optional<List<String>> specialization) {
 
         return doctorService.getDoctorsUsingSingleJpaMethods(name, specialization);
     }
@@ -46,6 +48,22 @@ public class DoctorController {
         }
 
         return ResponseEntity.badRequest().build();
+    }
+
+    @PostMapping("/doctors/{id}/schedule/{date}/{recordingTime}")
+    public ResponseEntity<Void> recordingToDoctor(@PathVariable Integer id,
+                                                  @PathVariable LocalDate date,
+                                                  @PathVariable Integer recordingTime,
+                                                  @RequestBody Integer petId) {
+        if (!doctorService.exists(id)) {
+            return ResponseEntity.notFound().build();
+        } else if (date.isBefore(LocalDate.now())) {
+            return ResponseEntity.badRequest().build();
+        }
+        Optional<Doctor> doctor = doctorService.getById(id);
+        schedule = doctor.get().getSchedule();
+        //TODO: schedule update
+        return ResponseEntity.created(URI.create("doctors/" + id + "/schedule/" + date + "/" + petId)).build();
     }
 
     @PutMapping("/doctors/{id}")

@@ -1,105 +1,58 @@
 package springee.pet;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springee.util.ErrorBody;
 
 import java.net.URI;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @RestController
+@AllArgsConstructor
 public class PetController {
 
-  private Map<Integer, Pet> synPets = new ConcurrentHashMap<Integer, Pet>() {{
-    put(0, new Pet("Tom", "Cat", 3));
-    put(1, new Pet("Jerry", "Mouse", 1));
-  }};
-
-  private volatile AtomicInteger idCounter = new AtomicInteger(2);
-
-  @GetMapping(value = "/greeting")
-  public String helloWorld() {
-    return "Hello World!";
-  }
+  private final PetService petService;
 
   @GetMapping(value = "/pets")
   public List<Pet> getPets(@RequestParam Optional<String> specie,
                            @RequestParam Optional<Integer> age) {
 
-    Predicate<Pet> specieFilter = specie.map(this::filterBySpecie)
-            .orElse(pet -> true);
-
-    Predicate<Pet> ageFilter = age.map(this::filterByAge)
-            .orElse(pet -> true);
-
-    Predicate<Pet> complexFilter = ageFilter.and(specieFilter);
-
-    return synPets.values().stream()
-            .filter(complexFilter)
-            .collect(Collectors.toList());
-    }
-
-    @GetMapping("/pets/{id}")
-    public ResponseEntity<?> getPetById(@PathVariable Integer id) {
-      if(id >= synPets.size()) {
-        return ResponseEntity.badRequest()
-                .body(new ErrorBody("There is no pet with ID = " + id));
-      }
-
-      return  ResponseEntity.ok(synPets.get(id));
-    }
-
-    @PostMapping("/pets")
-    public ResponseEntity<Void> createPet(@RequestBody Pet pet) {
-      synPets.put(idCounter.get(), pet);
-        return ResponseEntity.created(URI.create("doctors/" + idCounter.getAndIncrement())).build();
-    }
-
-    @PutMapping("/pets/{id}")
-    public void updatePet(@PathVariable Integer id,
-                          @RequestBody Pet pet) {
-      synPets.put(id, pet);
-    }
-
-    @DeleteMapping("/pets/{id}")
-    public ResponseEntity<Void> deletePet(@PathVariable Integer id) {
-      if (synPets.containsKey(id)) {
-        synPets.remove(id);
-        return ResponseEntity.noContent().build();
-      }
-
-      return ResponseEntity.notFound().build();
-    }
-
-  private Predicate<Pet> filterBySpecie(String specie) {
-    return pet -> pet.getSpecie().equals(specie);
+    return petService.getPetsUsingSingleJpaMethods(specie, age);
   }
 
-  private Predicate<Pet> filterByAge(Integer age) {
-    return pet -> pet.getAge().equals(age);
+  @GetMapping("/pets/{id}")
+  public ResponseEntity<?> getPetById(@PathVariable Integer id) {
+
+    Optional<Pet> mayBePet = petService.getById(id);
+
+    return mayBePet.map(Object.class::cast)
+            .map(pet -> ResponseEntity.ok(pet))
+            .orElse(ResponseEntity.badRequest()
+                    .body(new ErrorBody("There is no pet with ID = " + id)));
   }
-}
 
-@Data
-@AllArgsConstructor
-class ErrorBody {
-  private final Integer code = 400;
-  private String message;
-}
+  @PostMapping("/pets")
+  public ResponseEntity<Void> createPet(@RequestBody Pet pet) {
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
-class Pet {
-  private String name;
-  private String specie;
-  private Integer age;
+    Pet saved = petService.save(pet);
+    return ResponseEntity.created(URI.create("pets/" + saved.getId())).build();
+  }
+  @PutMapping("/pets/{id}")
+  public void updatePet(@PathVariable Integer id,
+                        @RequestBody Pet pet) {
+    pet.setId(id);
+    petService.save(pet);
+  }
+
+  @DeleteMapping("/pets/{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deletePet(@PathVariable Integer id) {
+
+    petService.delete(id)
+            .orElseThrow(NoSuchPetException::new);
+  }
 }
 
 
