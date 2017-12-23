@@ -1,8 +1,12 @@
 package springee.pet;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Retryable;
+import springee.store.StoreService;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -12,6 +16,7 @@ import java.util.stream.Collectors;
 public class PetService {
 
     private final JpaPetRepository petRepository;
+    private final StoreService storeService;
 
     public List<Pet> getPetsUsingSeparateJpaMethods(Optional<String> specie, Optional<Integer> age) {
         if (specie.isPresent() && age.isPresent()) {
@@ -70,5 +75,19 @@ public class PetService {
         Optional<Pet> mayBePet = petRepository.findById(id);
         mayBePet.ifPresent(pet -> petRepository.delete(pet.getId()));
         return mayBePet;
+    }
+
+    @Transactional
+    @Retryable(ObjectOptimisticLockingFailureException.class)
+    public void prescribe(Integer petId,
+                          String desctiption,
+                          String medicineName,
+                          Integer quantity,
+                          Integer timesPerDay) {
+        Pet pet = petRepository.findById(petId).orElseThrow(NoSuchMedicineException::new);
+        pet.getPrescriptions().add(new Prescription(desctiption, LocalDate.now(), timesPerDay)); //LocalDate.now() for test
+        petRepository.save(pet);
+
+        storeService.decrement(medicineName, quantity);
     }
 }
