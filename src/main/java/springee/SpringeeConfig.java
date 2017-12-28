@@ -23,16 +23,6 @@ public class SpringeeConfig {
   private List<String> specializations;
 
   @Bean
-  DoctorService doctorService(JpaDoctorRepository doctorRepository) {
-    return new DoctorService(doctorRepository);
-  }
-
-  @Bean
-  PetService petService(JpaPetRepository petRepository) {
-    return new PetService(petRepository);
-  }
-
-  @Bean
   CommandLineRunner initDoctors(JpaDoctorRepository repository) {
     return args -> {
       if (!repository.findAll().isEmpty()) {

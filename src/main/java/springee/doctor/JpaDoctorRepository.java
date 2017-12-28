@@ -11,11 +11,10 @@ public interface JpaDoctorRepository extends JpaRepository<Doctor, Integer> {
 
   Optional<Doctor> findById(Integer id);
 
-  //JOIN doctor.specialization s WHERE s IN :specialization
-
-  @Query("SELECT doctor FROM Doctor AS doctor " +
-         "WHERE ((LOWER(doctor.name) = LOWER(cast :name as text)) OR :name IS NULL) " +
-         " AND (doctor.specialization s WHERE s IN :specialization OR :specialization IS NULL) ")
+  @Query("SELECT DISTINCT doctor FROM Doctor AS doctor JOIN doctor.specialization s " +
+          " WHERE (s IN :specialization OR :specialization IS NULL) \n" +
+          " AND ((LOWER(doctor.name) LIKE :name) OR :name IS NULL) \n" +
+          " ORDER BY doctor.id ")
   List<Doctor> findNullableByNameAndSpecialization(@Param("name") String name,
                                            @Param("specialization")List<String> specialization);
 }

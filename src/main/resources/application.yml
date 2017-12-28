@@ -9,7 +9,7 @@ doctor:
 
 spring:
     datasource:
-        url: jdbc:postgresql:pet_clinic
+        url: jdbc:postgresql:pet_clinic_hw
         username: postgres
         password: postgres
 

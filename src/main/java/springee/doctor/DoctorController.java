@@ -14,7 +14,6 @@ import java.util.*;
 public class DoctorController {
 
     private final DoctorService doctorService;
-    private Schedule schedule;
 
     @GetMapping(value = "/doctors")
     public List<Doctor> getDoctors (@RequestParam Optional<String> name,
@@ -50,21 +49,21 @@ public class DoctorController {
         return ResponseEntity.badRequest().build();
     }
 
-    @PostMapping("/doctors/{id}/schedule/{date}/{recordingTime}")
-    public ResponseEntity<Void> recordingToDoctor(@PathVariable Integer id,
-                                                  @PathVariable LocalDate date,
-                                                  @PathVariable Integer recordingTime,
-                                                  @RequestBody Integer petId) {
-        if (!doctorService.exists(id)) {
-            return ResponseEntity.notFound().build();
-        } else if (date.isBefore(LocalDate.now())) {
-            return ResponseEntity.badRequest().build();
-        }
-        Optional<Doctor> doctor = doctorService.getById(id);
-        schedule = doctor.get().getSchedule();
-        //TODO: schedule update
-        return ResponseEntity.created(URI.create("doctors/" + id + "/schedule/" + date + "/" + petId)).build();
-    }
+//    @PostMapping("/doctors/{id}/schedule/{date}/{recordingTime}")
+//    public ResponseEntity<Void> recordingToDoctor(@PathVariable Integer id,
+//                                                  @PathVariable LocalDate date,
+//                                                  @PathVariable Integer recordingTime,
+//                                                  @RequestBody Integer petId) {
+//        if (!doctorService.exists(id)) {
+//            return ResponseEntity.notFound().build();
+//        } else if (date.isBefore(LocalDate.now())) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//        Optional<Doctor> doctor = doctorService.getById(id);
+//        schedule = doctor.get().getSchedule();
+//        //TODO: schedule update
+//        return ResponseEntity.created(URI.create("doctors/" + id + "/schedule/" + date + "/" + petId)).build();
+//    }
 
     @PutMapping("/doctors/{id}")
     public ResponseEntity<Void> updateDoctor(@PathVariable Integer id,

@@ -16,8 +16,7 @@ public class Doctor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    @Column
-    @ElementCollection(targetClass=String.class)
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> specialization;
     @OneToOne(cascade = CascadeType.ALL)
     private Schedule schedule;
