@@ -14,6 +14,8 @@ import springee.pet.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
 @ConfigurationProperties("doctor")
@@ -41,9 +43,13 @@ public class SpringeeConfig {
       blochSpec.add("ophthalmologist");
       blochSpec.add("urologist");
 
-      Schedule martinSched = new Schedule();
-      Schedule longSched = new Schedule();
-      Schedule blochSched = new Schedule();
+      Map<Integer, Integer> hourToPetId = new ConcurrentHashMap<>();
+      hourToPetId.put(8, 2);
+      hourToPetId.put(9, 1);
+
+      Schedule martinSched = new Schedule(LocalDate.now(), hourToPetId);
+      Schedule longSched = new Schedule(LocalDate.now(), hourToPetId);
+      Schedule blochSched = new Schedule(LocalDate.now(), hourToPetId);
 
 
       repository.save(new Doctor("Robert Martin", martinSpec, martinSched));

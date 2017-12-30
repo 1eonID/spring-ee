@@ -4,11 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -19,13 +17,12 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private LocalDate date;
-    private Integer recordingTime;
-    private Integer petID;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<Integer, Integer> hourToPetId;
 
-    public Schedule(LocalDate date, Integer recordingTime, Integer petID) {
+    public Schedule(LocalDate date, Map<Integer, Integer> hourToPetId) {
         this.date = date;
-        this.recordingTime = recordingTime;
-        this.petID = petID;
+        this.hourToPetId = hourToPetId;
     }
 
 }

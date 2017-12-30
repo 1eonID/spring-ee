@@ -1,16 +1,12 @@
 package springee.doctor;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import springee.SpringeeConfig;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +36,7 @@ public class DoctorService {
         if(!(updDoctor == null)){
             updDoctor.setName(doctor.getName());
             updDoctor.setSpecialization(doctor.getSpecialization());
+            updDoctor.setSchedule(doctor.getSchedule());
             doctorRepository.saveAndFlush(updDoctor);
         }
     }
