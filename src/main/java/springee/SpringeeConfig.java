@@ -3,6 +3,7 @@ package springee;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import springee.pet.*;
 import springee.store.Medicine;
 import springee.store.MedicineRepository;
@@ -15,15 +16,16 @@ import java.util.List;
 public class SpringeeConfig {
 
     @Bean
+    @Profile("prod")
     CommandLineRunner initDb(JpaPetRepository repository) {
         return args -> {
             List<Prescription> tomsPrescriptions = new ArrayList<>();
-            tomsPrescriptions.add(new Prescription("paracetamol", LocalDate.now(), 3));
-            tomsPrescriptions.add(new Prescription("asperin", LocalDate.now(), 3));
+            tomsPrescriptions.add(new Prescription("paracetamol", LocalDate.now(), 3, MedicineType.PERORAL));
+            tomsPrescriptions.add(new Prescription("asperin", LocalDate.now(), 3, MedicineType.PERORAL));
 
             List<Prescription> jerrysPrescriptions = new ArrayList<>();
 
-            jerrysPrescriptions.add(new Prescription("asperin", LocalDate.now(), 3));
+            jerrysPrescriptions.add(new Prescription("asperin", LocalDate.now(), 3, MedicineType.PERORAL));
 
             MedicalCard tomsCard = new MedicalCard(LocalDate.now(), "bla-bla");
             MedicalCard jerrysCard = new MedicalCard(LocalDate.now(), "foo-bar");
@@ -34,6 +36,7 @@ public class SpringeeConfig {
     }
 
     @Bean
+    @Profile("prod")
     CommandLineRunner initMedicineStore(MedicineRepository medicineRepository) {
         return args -> {
           medicineRepository.save(new Medicine("Brilliant green", 1));

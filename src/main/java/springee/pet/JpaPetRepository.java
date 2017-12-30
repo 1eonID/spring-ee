@@ -1,24 +1,31 @@
 package springee.pet;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface JpaPetRepository extends JpaRepository<Pet, Integer> {
     Optional<Pet> findById(Integer id);
 
-    List<Pet> findBySpecieAndAge(String specie, Integer age);
+    Page<Pet> findBySpecieAndAge(String specie, Integer age, Pageable pageable);
 
-    List<Pet> findBySpecie(String specie);
+    Page<Pet> findBySpecie(String specie, Pageable pageable);
 
-    List<Pet> findByAge(Integer age);
+    Page<Pet> findByAge(Integer age, Pageable pageable);
 
     @Query("SELECT pet FROM Pet AS pet " +
             "WHERE (pet.specie = :specie OR :specie IS NULL) " +
-            " AND (pet.age = :age OR :age IS NULL ) ")
+            " AND (pet.age = :age OR :age IS NULL ) "
+            /*" AND (pet.birthDay = :birthDay OR :birthDay IS NULL ) "*/)
     List<Pet> findNullableBySpecieAndAge(@Param("specie")String specie,
-                                         @Param("age") Integer age);
+                                         @Param("age") Integer age
+                                         /*@Param("birthDay") LocalDate birthDay*/);
 }

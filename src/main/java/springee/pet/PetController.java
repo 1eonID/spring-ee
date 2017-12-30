@@ -1,13 +1,18 @@
 package springee.pet;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springee.pet.dto.PrescriptionInputDto;
 import springee.util.ErrorBody;
 
+import javax.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -23,9 +28,11 @@ public class PetController {
 
   @GetMapping(value = "/pets")
   public List<Pet> getPets(@RequestParam Optional<String> specie,
-                           @RequestParam Optional<Integer> age) {
+                           @RequestParam Optional<Integer> age,
+                           Pageable pageable
+                           /*@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Optional<LocalDate> birthDay*/) {
 
-    return petService.getPetsUsingSingleJpaMethods(specie, age);
+    return petService.getPetsUsingSeparateJpaMethods(specie, age, pageable/*, birthDay*/);
   }
 
   @GetMapping("/pets/{id}")
@@ -62,12 +69,13 @@ public class PetController {
 
   @PostMapping("/pets/{id}/prescriptions")
   public void prescribe(@PathVariable Integer id,
-                        @RequestBody PrescriptionInputDto dto) {
+                        @Valid @RequestBody PrescriptionInputDto dto) {
     petService.prescribe(id,
                           dto.getDescription(),
                           dto.getMedicineName(),
                           dto.getQuantity(),
-                          dto.getTimesPerDay());
+                          dto.getTimesPerDay(),
+                          dto.getMedicineType());
   }
 
   @ExceptionHandler(NoSuchMedicineException.class)

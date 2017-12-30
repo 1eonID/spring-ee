@@ -1,6 +1,8 @@
 package springee.pet;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Retryable;
 import springee.store.StoreService;
@@ -18,17 +20,17 @@ public class PetService {
     private final JpaPetRepository petRepository;
     private final StoreService storeService;
 
-    public List<Pet> getPetsUsingSeparateJpaMethods(Optional<String> specie, Optional<Integer> age) {
+    public Page<Pet> getPetsUsingSeparateJpaMethods(Optional<String> specie, Optional<Integer> age, Pageable pageable) {
         if (specie.isPresent() && age.isPresent()) {
-            petRepository.findBySpecieAndAge(specie.get(), age.get());
+            petRepository.findBySpecieAndAge(specie.get(), age.get(), pageable);
         }
         if (specie.isPresent()) {
-            return petRepository.findBySpecie(specie.get());
+            return petRepository.findBySpecie(specie.get(), pageable);
         }
         if (age.isPresent()) {
-            return petRepository.findByAge(age.get());
+            return petRepository.findByAge(age.get(), pageable);
         }
-        return petRepository.findAll();
+        return petRepository.findAll(pageable);
     }
 
     public List<Pet> getPetsUsingStreamFilters(Optional<String> specie, Optional<Integer> age) {
@@ -46,9 +48,9 @@ public class PetService {
     }
 
     @Transactional
-    public List<Pet> getPetsUsingSingleJpaMethods(Optional<String> specie, Optional<Integer> age) {
+    public List<Pet> getPetsUsingSingleJpaMethods(Optional<String> specie, Optional<Integer> age/*, Optional<LocalDate> birthDay*/) {
         List<Pet> nullableBySpecieAndAge = petRepository.findNullableBySpecieAndAge(specie.orElse(null),
-            age.orElse(null));
+            age.orElse(null)/*, birthDay.orElse(null)*/);
 
         nullableBySpecieAndAge.forEach(pet -> System.out.println(pet.getPrescriptions()));
 
@@ -83,9 +85,10 @@ public class PetService {
                           String desctiption,
                           String medicineName,
                           Integer quantity,
-                          Integer timesPerDay) {
+                          Integer timesPerDay,
+                          MedicineType medicineType) {
         Pet pet = petRepository.findById(petId).orElseThrow(NoSuchMedicineException::new);
-        pet.getPrescriptions().add(new Prescription(desctiption, LocalDate.now(), timesPerDay)); //LocalDate.now() for test
+        pet.getPrescriptions().add(new Prescription(desctiption, LocalDate.now(), timesPerDay, medicineType)); //LocalDate.now() for test
         petRepository.save(pet);
 
         storeService.decrement(medicineName, quantity);
