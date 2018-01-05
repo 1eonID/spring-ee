@@ -2,8 +2,10 @@ package springee.doctor;
 
 import lombok.AllArgsConstructor;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springee.schedule.Schedule;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -37,19 +39,6 @@ public class DoctorController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping(value = "/doctors/{id}/schedule/{date}")
-    public ResponseEntity<?> getSchedule(@PathVariable Integer id,
-                                            @PathVariable String date) {
-        if (!doctorService.exists(id)) {
-            return ResponseEntity.notFound().build();
-        } else if (LocalDate.parse(date).isBefore(LocalDate.now())) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        Optional<Doctor> findDoctor = doctorService.getById(id);
-        return ResponseEntity.ok(findDoctor.get().getSchedule().getHourToPetId());
-    }
-
     @PostMapping("/doctors")
     public ResponseEntity<Void> createDoctor(@RequestBody Doctor doctor) {
         List<String> specieList = doctorService.getSpecializations();
@@ -60,31 +49,6 @@ public class DoctorController {
         }
 
         return ResponseEntity.badRequest().build();
-    }
-
-    @PostMapping("/doctors/{id}/schedule/{date}/{recordingTime}")
-    public ResponseEntity<Void> recordingToDoctor(@PathVariable Integer id,
-                                                  @PathVariable String date,
-                                                  @PathVariable Integer recordingTime,
-                                                  @RequestBody Integer petId) {
-        if (!doctorService.exists(id)) {
-            return ResponseEntity.notFound().build();
-        } else if (LocalDate.parse(date).isBefore(LocalDate.now())) {
-            return ResponseEntity.badRequest().build();
-        }
-        Optional<Doctor> doctor = doctorService.getById(id);
-        Schedule schedule = doctor.get().getSchedule();
-        Map<Integer, Integer> hourToPetId = schedule.getHourToPetId();
-        if (recordingTime <= 7 && recordingTime >= 16) {
-            return ResponseEntity.badRequest().build();
-        } else if (hourToPetId.containsKey(recordingTime)) {
-            return ResponseEntity.badRequest().build();
-        }
-        hourToPetId.put(recordingTime, petId);
-        schedule.setHourToPetId(hourToPetId);
-        doctor.get().setSchedule(schedule);
-        doctorService.update(id, doctor.get());
-        return ResponseEntity.created(URI.create("doctors/" + id + "/schedule/" + date + "/" + petId)).build();
     }
 
     @PutMapping("/doctors/{id}")

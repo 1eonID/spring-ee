@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,12 +19,9 @@ public class Doctor {
     private String name;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> specialization;
-    @OneToOne(cascade = CascadeType.ALL)
-    private Schedule schedule;
 
-    public Doctor(String name, List<String> specialization, Schedule schedule) {
+    public Doctor(String name, List<String> specialization) {
         this.name = name;
         this.specialization = specialization;
-        this.schedule = schedule;
     }
 }

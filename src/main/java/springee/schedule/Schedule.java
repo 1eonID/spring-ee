@@ -1,4 +1,4 @@
-package springee.doctor;
+package springee.schedule;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,23 +6,25 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Map;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Schedule {
+public class Schedule{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private LocalDate date;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Map<Integer, Integer> hourToPetId;
+    private Integer time;
+    private Integer petId;
+    private Integer doctorId;
 
-    public Schedule(LocalDate date, Map<Integer, Integer> hourToPetId) {
+
+    public Schedule(LocalDate date, Integer time, Integer petId, Integer doctorId) {
         this.date = date;
-        this.hourToPetId = hourToPetId;
+        this.time = time;
+        this.petId = petId;
+        this.doctorId = doctorId;
     }
-
 }

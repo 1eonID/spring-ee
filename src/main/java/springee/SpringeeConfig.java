@@ -5,17 +5,13 @@ import org.springframework.boot.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springee.doctor.Doctor;
-import springee.doctor.DoctorService;
-import springee.doctor.JpaDoctorRepository;
-import springee.doctor.Schedule;
+import springee.doctor.*;
 import springee.pet.*;
+import springee.schedule.Schedule;
+import springee.schedule.ScheduleRepository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 @Configuration
 @ConfigurationProperties("doctor")
@@ -43,19 +39,25 @@ public class SpringeeConfig {
       blochSpec.add("ophthalmologist");
       blochSpec.add("urologist");
 
-      Map<Integer, Integer> hourToPetId = new ConcurrentHashMap<>();
-      hourToPetId.put(8, 2);
-      hourToPetId.put(9, 1);
+      Doctor doctor1 = new Doctor("Robert Martin", martinSpec);
+      Doctor doctor2 = new Doctor("Josh Long", longSpec);
+      Doctor doctor3 = new Doctor("Joshua Bloch", blochSpec);
 
-      Schedule martinSched = new Schedule(LocalDate.now(), hourToPetId);
-      Schedule longSched = new Schedule(LocalDate.now(), hourToPetId);
-      Schedule blochSched = new Schedule(LocalDate.now(), hourToPetId);
+      repository.save(doctor1);
+      repository.save(doctor2);
+      repository.save(doctor3);
 
+    };
+  }
 
-      repository.save(new Doctor("Robert Martin", martinSpec, martinSched));
-      repository.save(new Doctor("Josh Long", longSpec, longSched));
-      repository.save(new Doctor("Joshua Bloch", blochSpec, blochSched));
+  @Bean
+  CommandLineRunner initSchedule(ScheduleRepository repository) {
+    return args -> {
+      Schedule schedule1 = new Schedule(LocalDate.now(), 8, 1, 1);
+      Schedule schedule2 = new Schedule(LocalDate.now(), 9, 2, 1);
 
+      repository.save(schedule1);
+      repository.save(schedule2);
     };
   }
 

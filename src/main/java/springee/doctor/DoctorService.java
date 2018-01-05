@@ -3,10 +3,12 @@ package springee.doctor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import springee.SpringeeConfig;
+import springee.schedule.Schedule;
 
+import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +17,7 @@ public class DoctorService {
     private final JpaDoctorRepository doctorRepository;
     private final SpringeeConfig springeeConfig;
 
+    @Transactional
     public List<Doctor> getDoctorsUsingSingleJpaMethods(Optional<String> name, Optional<List<String>> specialization) {
         return doctorRepository.findNullableByNameAndSpecialization(name.orElse(null), specialization.orElse(null));
     }
@@ -36,7 +39,6 @@ public class DoctorService {
         if(!(updDoctor == null)){
             updDoctor.setName(doctor.getName());
             updDoctor.setSpecialization(doctor.getSpecialization());
-            updDoctor.setSchedule(doctor.getSchedule());
             doctorRepository.saveAndFlush(updDoctor);
         }
     }
