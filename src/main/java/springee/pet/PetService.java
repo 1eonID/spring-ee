@@ -64,6 +64,10 @@ public class PetService {
         return petRepository.findById(id);
     }
 
+    public Boolean exists(Integer id) {
+        return petRepository.exists(id);
+    }
+
     public Pet save(Pet pet) {
         return petRepository.save(pet);
     }
