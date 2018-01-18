@@ -4,8 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
+
+import static java.util.stream.Collectors.toConcurrentMap;
+import static java.util.stream.Collectors.toMap;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +22,14 @@ public class ScheduleService {
     @Transactional
     public Set<Schedule> getScheduleByDoctorId(Integer id) {
         return scheduleRepository.findScheduleByDoctorId(id);
+    }
+
+    public Map<Integer, Integer> getSortedSchedule(Integer doctorId, LocalDate date) {
+        Set<Schedule> set = getScheduleByDoctorId(doctorId);
+
+        return set.stream()
+                .filter(schedule -> schedule.getDate().equals(date))
+                .collect(toMap(Schedule::getTime, Schedule::getPetId));
     }
 
     public Schedule save(Schedule Schedule) {

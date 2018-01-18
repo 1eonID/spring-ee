@@ -11,6 +11,7 @@ import springee.validation.ScheduleValidator;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -31,13 +32,8 @@ public class ScheduleController {
         } else if (date.isBefore(LocalDate.now())) {
             return ResponseEntity.badRequest().build();
         }
-        Set<Schedule> set = scheduleService.getScheduleByDoctorId(id);
-        SortedMap<Integer, Integer> sortedSchedule = new TreeMap<>();
-        for (Schedule schedule: set) {
-            if(schedule.getDate().equals(date)) {
-                sortedSchedule.put(schedule.getTime(), schedule.getPetId());
-            }
-        }
+
+        Map<Integer, Integer> sortedSchedule = scheduleService.getSortedSchedule(id, date);
         if (sortedSchedule.isEmpty()) {return ResponseEntity.ok("In this day, all time of reception free.");}
         return ResponseEntity.ok(sortedSchedule);
     }
