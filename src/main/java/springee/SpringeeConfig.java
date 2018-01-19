@@ -19,6 +19,9 @@ public class SpringeeConfig {
     @Profile("prod")
     CommandLineRunner initDb(JpaPetRepository repository) {
         return args -> {
+            if (!repository.findAll().isEmpty()) {
+                return;
+            }
             List<Prescription> tomsPrescriptions = new ArrayList<>();
             tomsPrescriptions.add(new Prescription("paracetamol", LocalDate.now(), 3, MedicineType.PERORAL));
             tomsPrescriptions.add(new Prescription("asperin", LocalDate.now(), 3, MedicineType.PERORAL));
@@ -39,9 +42,9 @@ public class SpringeeConfig {
     @Profile("prod")
     CommandLineRunner initMedicineStore(MedicineRepository medicineRepository) {
         return args -> {
-          medicineRepository.save(new Medicine("Brilliant green", 1));
-          medicineRepository.save(new Medicine("asperin", 2));
-          medicineRepository.save(new Medicine("paracetamol", 3));
+          medicineRepository.save(new Medicine("Brilliantum greenus", 1));
+//          medicineRepository.save(new Medicine("asperin", 2));
+//          medicineRepository.save(new Medicine("paracetamol", 3));
         };
     }
 }

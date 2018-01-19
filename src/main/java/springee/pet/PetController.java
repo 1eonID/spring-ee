@@ -1,6 +1,7 @@
 package springee.pet;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,7 +28,7 @@ public class PetController {
   }
 
   @GetMapping(value = "/pets")
-  public List<Pet> getPets(@RequestParam Optional<String> specie,
+  public Page<Pet> getPets(@RequestParam Optional<String> specie,
                            @RequestParam Optional<Integer> age,
                            Pageable pageable
                            /*@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Optional<LocalDate> birthDay*/) {

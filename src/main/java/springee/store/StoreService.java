@@ -7,7 +7,6 @@ import springee.pet.NoSuchMedicineException;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @AllArgsConstructor
@@ -34,15 +33,14 @@ public class StoreService {
 
         Optional<Medicine> byName = medicineRepository.findByName(medicineName);
 
-        log.warn("read version:" + byName.get().getVersion());
+        log.warn("read version:" + byName.map(Medicine::getVersion)
+                                        .orElse(null));
 
         Medicine medicine = byName
                 .filter(m -> m.getQuantity() >= quantity)
                 .orElseThrow(NoSuchMedicineException::new);
-        try {
-            TimeUnit.SECONDS.sleep(2);
-        } catch (InterruptedException e) {
-        }
+
+        log.warn("before sleep");
 
         medicine.setQuantity(medicine.getQuantity() - quantity);
 

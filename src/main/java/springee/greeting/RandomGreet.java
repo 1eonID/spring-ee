@@ -12,7 +12,7 @@ public class RandomGreet {
       "bonjour world"
   };
 
-  String getRandomGreet() {
+  public String getRandomGreet() {
     return GREETS[new Random().nextInt(3)];
   }
 }

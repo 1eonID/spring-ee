@@ -28,4 +28,9 @@ spring:
       indent-output: false
 
   #jpa.hibernate.ddl-auto: validate
+
+---
+spring:
+  profiles: test
+
 #logging.level.org.hibernate: DEBUG
