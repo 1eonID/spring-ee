@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.google.common.io.Resources;
+import org.springframework.http.HttpHeaders;
 import springee.store.Medicine;
 import springee.store.MedicineRepository;
 import org.junit.After;
@@ -56,7 +57,8 @@ public class PetControllerTest {
     public void getAllPets() throws Exception {
         petRepository.save(new Pet("Tom", "Cat", 3, LocalDate.now(), null, null));
 
-        mockMvc.perform(get("/pets"))
+        mockMvc.perform(get("/pets")
+                .header(HttpHeaders.AUTHORIZATION, "Basic bGVvbl9pZDo0NTY="))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(1)))
                 .andExpect(jsonPath("$.content[0].name", is("Tom")));
@@ -68,6 +70,7 @@ public class PetControllerTest {
         petRepository.save(new Pet("Jerry", "Mouse", 1, LocalDate.now(), null, null));
 
         mockMvc.perform(get("/pets")
+                .header(HttpHeaders.AUTHORIZATION, "Basic bGVvbl9pZDo0NTY=")
                 .param("sort", "age"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(2)))
@@ -80,7 +83,8 @@ public class PetControllerTest {
         Integer id = petRepository.save(new Pet("Tom", "Cat", 3, LocalDate.now(), null, null))
                 .getId();
 
-        mockMvc.perform(get("/pets/{id}", id))
+        mockMvc.perform(get("/pets/{id}", id)
+                .header(HttpHeaders.AUTHORIZATION, "Basic bGVvbl9pZDo0NTY="))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(id)))
                 .andExpect(jsonPath("$.name", is("Tom")))
@@ -89,7 +93,8 @@ public class PetControllerTest {
 
     @Test
     public void petNotFound() throws Exception {
-        mockMvc.perform(get("/pets/1"))
+        mockMvc.perform(get("/pets/1")
+                .header(HttpHeaders.AUTHORIZATION, "Basic bGVvbl9pZDo0NTY="))
                 .andExpect(status().isBadRequest());
     }
 
@@ -98,6 +103,7 @@ public class PetControllerTest {
         String body = readFile("cat.json");
 
         mockMvc.perform(post("/pets")
+                .header(HttpHeaders.AUTHORIZATION, "Basic bGVvbl9pZDo0NTY=")
                 .content(body)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -116,6 +122,7 @@ public class PetControllerTest {
         String body = readFile("cat.json");
 
         mockMvc.perform(put("/pets/{id}", id)
+                .header(HttpHeaders.AUTHORIZATION, "Basic bGVvbl9pZDo0NTY=")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
                 .andExpect(status().isOk());
@@ -131,7 +138,8 @@ public class PetControllerTest {
         Integer id = petRepository.save(new Pet("Tom", "Cat", 3, LocalDate.now(), null, null))
                 .getId();
 
-        mockMvc.perform(delete("/pets/{id}", id))
+        mockMvc.perform(delete("/pets/{id}", id)
+                .header(HttpHeaders.AUTHORIZATION, "Basic bGVvbl9pZDo0NTY="))
                 .andExpect(status().isNoContent());
 
         Optional<Pet> mayBePet = petRepository.findById(id);
@@ -150,6 +158,7 @@ public class PetControllerTest {
         String body = readFile("prescription.json");
 
         mockMvc.perform(post("/pets/{id}/prescriptions", id)
+                .header(HttpHeaders.AUTHORIZATION, "Basic bGVvbl9pZDo0NTY=")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
                 .andExpect(status().isOk());
@@ -171,6 +180,7 @@ public class PetControllerTest {
         String body = readFile("prescription.json");
 
         mockMvc.perform(post("/pets/{id}/prescriptions", id)
+                .header(HttpHeaders.AUTHORIZATION, "Basic bGVvbl9pZDo0NTY=")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
                 .andExpect(status().isBadRequest());
