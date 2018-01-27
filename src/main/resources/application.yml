@@ -1,7 +1,3 @@
-clinic-info:
-  name: 'my clinic'
-  working-hours: '8-17'
-
 spring:
     jackson:
         #property-naming-strategy: SNAKE_CASE

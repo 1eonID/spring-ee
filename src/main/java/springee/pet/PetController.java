@@ -3,8 +3,6 @@ package springee.pet;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +11,6 @@ import springee.util.ErrorBody;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -42,7 +39,7 @@ public class PetController {
     Optional<Pet> mayBePet = petService.getById(id);
 
     return mayBePet.map(Object.class::cast)
-            .map(pet -> ResponseEntity.ok(pet))
+            .map(ResponseEntity::ok)
             .orElse(ResponseEntity.badRequest()
                     .body(new ErrorBody("There is no pet with ID = " + id)));
   }

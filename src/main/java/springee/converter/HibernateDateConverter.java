@@ -1,11 +1,9 @@
 package springee.converter;
 
 import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 import java.sql.Date;
 import java.time.LocalDate;
 
-//@Converter(autoApply = true)
 public class HibernateDateConverter implements AttributeConverter<LocalDate, Date> {
   @Override
   public Date convertToDatabaseColumn(LocalDate attribute) {

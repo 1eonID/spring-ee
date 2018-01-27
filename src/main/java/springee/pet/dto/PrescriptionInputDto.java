@@ -6,7 +6,6 @@ import org.hibernate.validator.constraints.Range;
 import springee.pet.MedicineType;
 import springee.validator.LatinName;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;

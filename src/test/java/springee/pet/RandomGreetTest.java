@@ -18,7 +18,7 @@ public class RandomGreetTest {
     Stream.generate(randomGreet::getRandomGreet)
         .limit(poolSize)
         .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-        .values().stream()
+        .values()
         .forEach(v -> Assert.assertTrue(calculateDelta(v, poolSize) <= maxDelta));
   }
 

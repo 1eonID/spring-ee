@@ -1,0 +1,32 @@
+= Pet clinic
+ Pet clinic implemented during EE course
+
+ == Pets
+ bla-bla
+
+ === Get pet by ID
+ bla-bla
+
+ ==== HTTP request
+ include::{snippets}/pet/get-by-id/http-request.adoc[]
+
+ ==== Path parameters
+ include::{snippets}/pet/get-by-id/path-parameters.adoc[]
+
+ ==== HTTP response
+ include::{snippets}/pet/get-by-id/http-response.adoc[]
+
+ ==== Response fields
+ include::{snippets}/pet/get-by-id/response-fields.adoc[]
+
+ === Create Pet
+ to create pet you have to make a http request
+
+ ==== HTTP request
+ include::{snippets}/pet/create/http-request.adoc[]
+
+ ==== Request fields
+ include::{snippets}/pet/create/request-fields.adoc[]
+
+ ==== HTTP response
+ include::{snippets}/pet/create/http-response.adoc[]

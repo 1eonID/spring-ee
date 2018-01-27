@@ -22,7 +22,7 @@ public class User implements UserDetails{
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Authority> authorities = new HashSet<>();
 
-    public User(String leon_id, String password, String authority) {
+    User(String username, String password, String authority) {
         this.username = username;
         this.password = password;
         authorities.add(new Authority(authority));

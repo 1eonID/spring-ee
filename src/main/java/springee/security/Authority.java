@@ -10,6 +10,6 @@ import javax.persistence.Embeddable;
 @Embeddable
 @AllArgsConstructor
 @NoArgsConstructor
-public class Authority implements GrantedAuthority {
+class Authority implements GrantedAuthority {
     private String authority;
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.google.common.io.Resources;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.http.HttpHeaders;
 import springee.store.Medicine;
 import springee.store.MedicineRepository;
@@ -25,6 +26,11 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -36,6 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs(outputDir = "build/generated-snippets")
 public class PetControllerTest {
 
     @Autowired
@@ -88,7 +95,18 @@ public class PetControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(id)))
                 .andExpect(jsonPath("$.name", is("Tom")))
-                .andExpect(jsonPath("$.*", hasSize(7)));
+                .andExpect(jsonPath("$.*", hasSize(7)))
+                        .andDo(document("pet/get-by-id",
+                                pathParameters(parameterWithName("id").description("Pet ID")),
+                                responseFields(
+                                        fieldWithPath("id").description("some description"),
+                                        fieldWithPath("name").description("some description"),
+                                        fieldWithPath("age").description("some description"),
+                                        fieldWithPath("specie").description("Pet type (Cat or Dog)"),
+                                        fieldWithPath("birthDate").description("some description"),
+                                        fieldWithPath("medicalCard").description("some description"),
+                                        fieldWithPath("prescriptions").description("some description")
+                                )));
     }
 
     @Test
